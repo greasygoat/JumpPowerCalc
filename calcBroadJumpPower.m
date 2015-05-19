@@ -12,9 +12,9 @@ figure('units','normalized','outerposition',[0 0 1 1]);
 
 plot(vertData);
 
-close all;
-
 jumpEndPoints = int64(ginput(2));
+
+close all;
 
 jumpTime = (jumpEndPoints(2,1)-jumpEndPoints(1,1)) * .001;
 

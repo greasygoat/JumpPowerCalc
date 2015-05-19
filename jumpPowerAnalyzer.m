@@ -104,7 +104,11 @@ else
 end
 resultFilename = strcat(resultPathname, resultFilename);
 
-a = xlsread(resultFilename);
+if jumpFlag == 1
+    a = xlsread(resultFilename);
+else
+    a = xlsread(resultFilename, 'BroadJump');
+end
 
 numRows = (size(a,1));
 
