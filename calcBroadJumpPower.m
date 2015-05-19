@@ -1,4 +1,4 @@
-function [ peakResultantBroadJumpPower, avgResultantBroadJumpPower ] = calcBroadJumpPower( processedData, weightInNewtons )
+function [ peakResultantBroadJumpPower, avgResultantBroadJumpPower ] = calcBroadJumpPower( horData, vertData, weightInNewtons )
 %calcBroadJumpPower calculates the power of a vertical jump using vertical
 %and hortizontal GRF force data
 %   This function takes scaled vertical/hortizonatal GRF data and a 
@@ -8,28 +8,35 @@ function [ peakResultantBroadJumpPower, avgResultantBroadJumpPower ] = calcBroad
 
 % Author: Patrick Rider
 
-plot(processedData);
+figure('units','normalized','outerposition',[0 0 1 1]);
+
+plot(vertData);
+
+close all;
 
 jumpEndPoints = int64(ginput(2));
 
 jumpTime = (jumpEndPoints(2,1)-jumpEndPoints(1,1)) * .001;
 
-jumpData = processedData(jumpEndPoints(1,1):jumpEndPoints(2,1),1);
+vertJumpData = vertData(jumpEndPoints(1,1):jumpEndPoints(2,1),1);
+horJumpData = horData(jumpEndPoints(1,1):jumpEndPoints(2,1),1);
 
-vertJumpImpulse = .001*trapz(jumpData) - (jumpTime* weightInNewtons);
+vertJumpImpulse = .001*trapz(vertJumpData) - (jumpTime* weightInNewtons);
+horJumpImpulse = .001*trapz(horJumpData);
 
-velocity = vertJumpImpulse/(weightInNewtons*0.10197162099998805);
+vertVelocity = vertJumpImpulse/(weightInNewtons*0.10197162099998805);
+horVelocity = horJumpImpulse/(weightInNewtons*0.10197162099998805);
 
-avgVertPower = (mean(jumpData)-weightInNewtons) * velocity;
+avgVertPower = (mean(vertJumpData)-weightInNewtons) * vertVelocity;
 
-peakVertPower = (max(jumpData)-weightInNewtons) * velocity;
+peakVertPower = (max(vertJumpData)-weightInNewtons) * vertVelocity;
 
-avgHorPower = 1;
+avgHorPower = mean(horJumpData) * horVelocity;
 
-peakHorPower = 1;
+peakHorPower = max(horJumpData) * horVelocity;
 
-peakResultantBroadJumpPower = sqrt((peakVertPower^2 + peakHorPower^2));
+peakResultantBroadJumpPower = int64(sqrt(double(peakVertPower^2 + peakHorPower^2)));
 
-avgResultantBroadJumpPower = sqrt((avgVertPower^2 + avgHorPower^2));
+avgResultantBroadJumpPower = int64(sqrt(double(avgVertPower^2 + avgHorPower^2)));
 end
 

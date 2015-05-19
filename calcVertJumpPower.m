@@ -8,9 +8,13 @@ function [ peakVertPower, avgVertPower ] = calcVertJumpPower( processedData, wei
 
 % Author: Patrick Rider
 
+figure('units','normalized','outerposition',[0 0 1 1]);
+
 plot(processedData);
 
 jumpEndPoints = int64(ginput(2));
+
+close all;
 
 jumpTime = (jumpEndPoints(2,1)-jumpEndPoints(1,1)) * .001;
 
