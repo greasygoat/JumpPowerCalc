@@ -40,20 +40,23 @@ end
 %Scale forces
 prompt = ('Enter weight in pounds');
 
-title='Get Weight';
+promptTitle='Get Weight';
 
-getWeight = inputdlg(prompt, title);
+getWeight = newid(prompt, promptTitle);
 
 weightInPounds = str2num(getWeight{1}); %#ok<*ST2NM> I know what i'm doing matlab so shutup
 
 weightInNewtons = weightInPounds*4.44822162 ;
 
 figure('units','normalized','outerposition',[0 0 1 1]);
+ 
 
 if jumpFlag == 1
     plot(frames(:, (size(frames,2)-1))); %graph a vert force curve in VJ
+    title('Move cursor and click to select baseline');
 else
     plot(frames(:, (size(frames,2)-1))); %graph a vert force curve in SJ
+    title('Move cursor and click to select baseline');
 end
 
 baselineEndPoints = int64(ginput(2));
@@ -76,22 +79,36 @@ else
 end
 
 %Get analysis frames from user
-x = inputdlg('Enter space-separated frame #s (eg. 2 3 4):', 'Frames to analyze', [1, 53]);
+x = newid('Enter space-separated frame #s (eg. 2 3 4):', 'Frames to analyze', [1, 53]);
 
 framesToAnalyze = str2num(x{:}); 
 
 %Calc jump power
-peakResult = zeros(3,1);
-avgResult = zeros(3,1);
+dataCheck = 0;
 
-if jumpFlag == 1
-   for i = 1:length(framesToAnalyze)
-       [peakResult(i), avgResult(i)]  = calcVertJumpPower(processedData(:,framesToAnalyze(i)), weightInNewtons);
-   end
-else
-   for i = 1:length(framesToAnalyze)
-       [peakResult(i), avgResult(i)]  = calcBroadJumpPower(horProcessedData(:,framesToAnalyze(i)), processedData(:,framesToAnalyze(i)), weightInNewtons);
-   end
+while dataCheck == 0
+    
+    peakResult = zeros(3,1);
+    avgResult = zeros(3,1);
+    
+    if jumpFlag == 1
+        for i = 1:length(framesToAnalyze)
+            [peakResult(i), avgResult(i)]  = calcVertJumpPower(processedData(:,framesToAnalyze(i)), weightInNewtons);
+        end
+    
+    else
+        for i = 1:length(framesToAnalyze)
+            [peakResult(i), avgResult(i)]  = calcBroadJumpPower(horProcessedData(:,framesToAnalyze(i)), processedData(:,framesToAnalyze(i)), weightInNewtons);
+        end
+    
+    end
+        
+    %Check the data to make sure it's acceptable
+    close all
+    disp(peakResult);
+    disp(avgResult);
+        
+    dataCheck = str2num(cell2mat(newid('Enter 1 for yes and 0 for no','Are you satisfied with the data:', [1, 55])));
 end
 
 %setup xlswrite
@@ -102,6 +119,7 @@ if isequal(filename,0) || isequal(pathname,0)
 else
     disp(['User selected ', fullfile(resultPathname, resultFilename)])
 end
+
 resultFilename = strcat(resultPathname, resultFilename);
 
 if jumpFlag == 1

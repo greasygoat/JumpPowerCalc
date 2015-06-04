@@ -11,7 +11,9 @@ function [ peakResultantBroadJumpPower, avgResultantBroadJumpPower ] = calcBroad
 figure('units','normalized','outerposition',[0 0 1 1]);
 
 plot(vertData);
-
+title({'Move cursor and click to select jump start and jump end'
+       'Select onsets and offsets in correct order; from left to right!'});
+   
 jumpEndPoints = int64(ginput(2));
 
 close all;
